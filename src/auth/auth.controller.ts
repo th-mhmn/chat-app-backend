@@ -1,16 +1,11 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/create-auth.dto';
+import { ResponseAuthDto } from './dto/response-auth.dto';
+import { TransformDTO } from 'src/_cores/interceptors/transform-dto.interceptor';
 
 @Controller('auth')
+@TransformDTO(ResponseAuthDto)
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
