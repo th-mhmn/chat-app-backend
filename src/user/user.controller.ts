@@ -12,6 +12,9 @@ import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from 'src/_cores/guards/auth.guard';
+import { CurrentUser } from 'src/_cores/decorators/current-user.decorator';
+import { TransformDTO } from 'src/_cores/interceptors/transform-dto.interceptor';
+import { ResponseUserDto } from './dto/response-user.dto';
 
 @Controller('users')
 export class UserController {
@@ -24,7 +27,10 @@ export class UserController {
 
   @Get('/profile')
   @UseGuards(AuthGuard)
-  getCurrentUser() {}
+  @TransformDTO(ResponseUserDto)
+  getCurrentUser(@CurrentUser() currentUser: IUserPayload) {
+    return currentUser;
+  }
 
   @Get()
   findAll() {
