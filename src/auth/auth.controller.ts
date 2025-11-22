@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignUpDto } from './dto/create-auth.dto';
+import { SignUpDto } from './dto/sign-up.dto';
 import { ResponseAuthDto } from './dto/response-auth.dto';
 import { TransformDTO } from 'src/_cores/interceptors/transform-dto.interceptor';
 
@@ -10,7 +10,12 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('/sign-up')
-  create(@Body() signUpDto: SignUpDto) {
+  signUp(@Body() signUpDto: SignUpDto) {
+    return this.authService.create(signUpDto);
+  }
+
+  @Post('/sign-up')
+  signIn(@Body() signUpDto: SignUpDto) {
     return this.authService.create(signUpDto);
   }
 
