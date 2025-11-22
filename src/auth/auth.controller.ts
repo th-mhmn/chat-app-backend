@@ -3,6 +3,7 @@ import { AuthService } from './auth.service';
 import { SignUpDto } from './dto/sign-up.dto';
 import { ResponseAuthDto } from './dto/response-auth.dto';
 import { TransformDTO } from 'src/_cores/interceptors/transform-dto.interceptor';
+import { SignInDto } from './dto/sign-in.dto';
 
 @Controller('auth')
 @TransformDTO(ResponseAuthDto)
@@ -11,12 +12,12 @@ export class AuthController {
 
   @Post('/sign-up')
   signUp(@Body() signUpDto: SignUpDto) {
-    return this.authService.create(signUpDto);
+    return this.authService.signUp(signUpDto);
   }
 
-  @Post('/sign-up')
-  signIn(@Body() signUpDto: SignUpDto) {
-    return this.authService.create(signUpDto);
+  @Post('/sign-in')
+  signIn(@Body() signInDto: SignInDto) {
+    return this.authService.signIn(signInDto);
   }
 
   @Get()
