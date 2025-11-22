@@ -6,6 +6,7 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { type ClassConstructor, plainToInstance } from 'class-transformer';
+import { Request } from 'express';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
@@ -18,8 +19,20 @@ export class TransformDTOInterceptor<T> implements NestInterceptor {
   constructor(private readonly dtoClass: ClassConstructor<T>) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+    const request = context.switchToHttp().getRequest<Request>();
+    const isAuthenticationUrl = request.path.includes('auth');
     return next.handle().pipe(
       map((data) => {
+        if (isAuthenticationUrl) {
+          const { savedUser, accessToken } = data;
+          return {
+            message: 'Success',
+            data: plainToInstance(this.dtoClass, savedUser, {
+              excludeExtraneousValues: true,
+            }),
+            accessToken,
+          };
+        }
         return {
           message: 'Success',
           data: plainToInstance(this.dtoClass, data, {
