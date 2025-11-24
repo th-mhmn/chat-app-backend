@@ -13,11 +13,9 @@ export class PostService {
     @InjectModel(User.name) private userModel: Model<User>,
   ) {}
 
-  async create(createPostDto: CreatePostDto) {
-    const user = await this.userModel.findOne({ email: 'taha@email.com' });
-    const newPost = new this.postModel({ title: 'title 1', user });
-    newPost.save();
-    return 'This action adds a new post';
+  create(createPostDto: CreatePostDto) {
+    const post = new this.postModel(createPostDto);
+    return post.save();
   }
 
   findAll() {
