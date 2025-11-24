@@ -7,6 +7,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthModule } from './auth/auth.module';
 import { PostModule } from './post/post.module';
 import { ResourceModule } from './resource/resource.module';
+import { CloudinaryModule } from './cloudinary/cloudinary.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -23,6 +24,7 @@ import { ResourceModule } from './resource/resource.module';
     AuthModule,
     PostModule,
     ResourceModule,
+    CloudinaryModule,
   ],
   controllers: [AppController],
   providers: [AppService],
