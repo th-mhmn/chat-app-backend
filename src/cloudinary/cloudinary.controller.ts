@@ -16,18 +16,10 @@ export class CloudinaryController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadImage(@UploadedFile() file: Express.Multer.File) {
     const result = await this.cloudinaryService.uploadFile(file);
-    const {
-      secure_url,
-      version,
-      display_name,
-      format,
-      resource_type,
-      public_id,
-    } = result;
+    const { version, display_name, format, resource_type, public_id } = result;
     return {
       message: 'Upload Successful',
       data: {
-        url: secure_url,
         public_id,
         version,
         display_name,
@@ -44,17 +36,9 @@ export class CloudinaryController {
     return {
       message: 'Upload Successful',
       data: result.map((res) => {
-        const {
-          secure_url,
-          version,
-          display_name,
-          format,
-          resource_type,
-          public_id,
-        } = res;
+        const { version, display_name, format, resource_type, public_id } = res;
 
         return {
-          url: secure_url,
           public_id,
           version,
           display_name,
