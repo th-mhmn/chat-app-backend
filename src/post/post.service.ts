@@ -26,15 +26,17 @@ export class PostService {
     return this.postModel.findById(id);
   }
 
-  update(id: string, updatePostDto: UpdatePostDto) {
-    const post = this.postModel.findByIdAndUpdate(id, updatePostDto, {
+  async update(id: string, updatePostDto: UpdatePostDto) {
+    const post = await this.postModel.findByIdAndUpdate(id, updatePostDto, {
       new: true,
     });
     if (!post) throw new NotFoundException('Post not found');
     return post;
   }
 
-  remove(id: number) {
+  async remove(id: string) {
+    const post = await this.postModel.findByIdAndDelete(id);
+    if (!post) throw new NotFoundException('Post not found');
     return `This action removes a #${id} post`;
   }
 }
