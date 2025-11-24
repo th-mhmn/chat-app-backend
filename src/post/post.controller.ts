@@ -40,7 +40,7 @@ export class PostController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.postService.findOne(+id);
+    return this.postService.findOne(id);
   }
 
   @Roles('admin', 'user')
