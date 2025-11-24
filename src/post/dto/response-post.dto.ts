@@ -14,7 +14,7 @@ export class ResponsePostDto {
   content: string;
 
   @Expose()
-  mediaUrls: string[];
+  mediaUrls: IMediaType[];
 
   @Expose()
   visibility: IVisibility;

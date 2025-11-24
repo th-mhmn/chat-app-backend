@@ -18,6 +18,7 @@ import { TransformDTO } from 'src/_cores/interceptors/transform-dto.interceptor'
 import { ResponsePostDto } from './dto/response-post.dto';
 import { CurrentUser } from 'src/_cores/decorators/current-user.decorator';
 import { ParseObjectIdPipe } from '@nestjs/mongoose';
+import { UploadMediaDto } from './dto/upload-media.dto';
 
 @Controller('posts')
 @TransformDTO(ResponsePostDto)
@@ -31,6 +32,14 @@ export class PostController {
     @CurrentUser() currentUser: IUserPayload,
   ) {
     return this.postService.create(createPostDto, currentUser);
+  }
+
+  @Post(':id/upload')
+  uploadMedia(
+    @Body() uploadMediaDto: UploadMediaDto[],
+    @Param('id', ParseObjectIdPipe) id: string,
+  ) {
+    return this.postService.uploadMedia(id, uploadMediaDto);
   }
 
   @Roles('admin')

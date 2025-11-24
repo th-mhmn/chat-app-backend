@@ -1,8 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { User } from 'src/user/schemas/user.schema';
+import { type UserDocument } from 'src/user/schemas/user.schema';
 
-export type UserDocument = HydratedDocument<User>;
 export type PostDocument = HydratedDocument<Post>;
 
 @Schema({ timestamps: true })
@@ -13,8 +12,8 @@ export class Post {
   backgroundColor: string;
   @Prop()
   content: string;
-  @Prop()
-  mediaUrls?: string[];
+  @Prop({ default: [] })
+  mediaUrls: IMediaType[];
   @Prop({ enum: ['public', 'private', 'friends'], default: 'public' })
   visibility: IVisibility;
 }
