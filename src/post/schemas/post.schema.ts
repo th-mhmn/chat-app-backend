@@ -13,7 +13,7 @@ export class Post {
   @Prop()
   content: string;
   @Prop({ default: [] })
-  mediaUrls: IMediaType[];
+  mediaFiles: IMediaType[];
   @Prop({ enum: ['public', 'private', 'friends'], default: 'public' })
   visibility: IVisibility;
 }
