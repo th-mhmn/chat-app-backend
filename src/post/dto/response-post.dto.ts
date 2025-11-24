@@ -1,8 +1,10 @@
 import { Expose, Transform } from 'class-transformer';
 import { PostDocument } from '../schemas/post.schema';
+import { ConvertObjectId } from 'src/_cores/decorators/convert-object-id.decorator';
 
 export class ResponsePostDto {
   @Expose()
+  @ConvertObjectId()
   _id: string;
 
   @Expose()
