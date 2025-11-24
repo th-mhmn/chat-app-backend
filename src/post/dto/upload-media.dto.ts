@@ -10,6 +10,10 @@ export class UploadMediaDto {
 
   @IsString()
   @IsNotEmpty()
+  public_id: string;
+
+  @IsString()
+  @IsNotEmpty()
   format: string;
 
   @IsString()
