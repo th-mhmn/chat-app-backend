@@ -23,4 +23,14 @@ export class CloudinaryService {
   ): Promise<CloudinaryResponse[]> {
     return Promise.all(files.map((file) => this.uploadFile(file)));
   }
+
+  deleteFile(public_id: string) {
+    return cloudinary.uploader.destroy(public_id);
+  }
+
+  deleteMultipleFiles(public_ids: string[]) {
+    return Promise.all(
+      public_ids.map((public_id) => this.deleteFile(public_id)),
+    );
+  }
 }
