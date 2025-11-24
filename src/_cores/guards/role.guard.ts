@@ -3,20 +3,25 @@ import {
   CanActivate,
   ExecutionContext,
   ForbiddenException,
+  BadRequestException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Observable } from 'rxjs';
 import { ROLES_KEY } from '../decorators/roles.decorator';
 import { Request } from 'express';
+import { ResourceService } from 'src/resource/resource.service';
 
 @Injectable()
 export class RoleGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
+  constructor(
+    private reflector: Reflector,
+    private resourceService: ResourceService,
+  ) {}
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     const currentUser = request.currentUser;
+
+    const resourceType = this.extractResource(request.path);
+    if (!resourceType) throw new BadRequestException('Resource type not found');
 
     const requiredRoles = this.reflector.get(
       ROLES_KEY,
@@ -30,11 +35,23 @@ export class RoleGuard implements CanActivate {
     if (requiredRoles.includes('user') && currentUser.role === 'user') {
       const userId = currentUser._id;
       const resourceId = request.params.id;
-      if (userId === resourceId) return true;
+
+      const userIdOfResource = await this.resourceService.getResource(
+        resourceType,
+        resourceId,
+      );
+
+      if (userId === userIdOfResource) return true;
       throw new ForbiddenException('You can only access your own resources');
     }
     throw new ForbiddenException(
       'You are not authorized to perform this action',
     );
+  }
+
+  private extractResource(path: string): string | null {
+    const paths = path.split('/');
+    if (paths.length > 3) return paths[3];
+    return null;
   }
 }
