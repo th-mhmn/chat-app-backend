@@ -1,7 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
+import { User } from 'src/user/schemas/user.schema';
 
-export type UserDocument = HydratedDocument<Post>;
+export type UserDocument = HydratedDocument<User>;
+export type PostDocument = HydratedDocument<Post>;
 
 @Schema({ timestamps: true })
 export class Post {
