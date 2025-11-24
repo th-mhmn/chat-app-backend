@@ -1,5 +1,5 @@
-import { Expose, Transform } from 'class-transformer';
-import { PostDocument } from '../schemas/post.schema';
+import { Expose, Transform, Type } from 'class-transformer';
+import { MediaTypeWithUrl, PostDocument } from '../schemas/post.schema';
 import { ConvertObjectId } from 'src/_cores/decorators/convert-object-id.decorator';
 
 export class ResponsePostDto {
@@ -14,7 +14,8 @@ export class ResponsePostDto {
   content: string;
 
   @Expose()
-  mediaFiles: IMediaType[];
+  @Type(() => MediaTypeWithUrl)
+  mediaFiles: MediaTypeWithUrl[];
 
   @Expose()
   visibility: IVisibility;
