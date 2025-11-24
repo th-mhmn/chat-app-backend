@@ -5,14 +5,6 @@ interface IUserPayload {
   role: sting;
 }
 
-type IMediaType = {
-  version: number;
-  display_name: string;
-  public_id: string;
-  format: string;
-  resource_type: string;
-};
-
 type IRole = 'user' | 'admin';
 type IVisibility = 'public' | 'private' | 'friends';
 
