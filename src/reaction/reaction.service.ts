@@ -1,11 +1,21 @@
-import { Injectable } from '@nestjs/common';
-import { CreateReactionDto } from './dto/create-reaction.dto';
-import { UpdateReactionDto } from './dto/update-reaction.dto';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Reaction } from './schemas/reaction.schema';
+import { Model } from 'mongoose';
+import { AddReactionDto } from 'src/post/dto/add-reaction.dto';
 
 @Injectable()
 export class ReactionService {
-  create(createReactionDto: CreateReactionDto) {
-    return 'This action adds a new reaction';
+  constructor(
+    @InjectModel(Reaction.name) private reactionModel: Model<Reaction>,
+  ) {}
+  create(addReactionDto: AddReactionDto, currentUser: IUserPayload) {
+    const reaction = new this.reactionModel({
+      post: addReactionDto.postId,
+      type: addReactionDto.type,
+      user: currentUser,
+    });
+    return reaction.save();
   }
 
   findAll() {
@@ -16,8 +26,20 @@ export class ReactionService {
     return `This action returns a #${id} reaction`;
   }
 
-  update(id: number, updateReactionDto: UpdateReactionDto) {
-    return `This action updates a #${id} reaction`;
+  async findExisting(postId: string, userId: string) {
+    return await this.reactionModel.findOne({ post: postId, user: userId });
+  }
+
+  async update(id: string, type: IReaction) {
+    const reaction = await this.reactionModel.findByIdAndUpdate(
+      id,
+      { type },
+      { new: true },
+    );
+
+    if (!reaction) throw new NotFoundException('Reaction not found');
+
+    return reaction;
   }
 
   remove(id: number) {

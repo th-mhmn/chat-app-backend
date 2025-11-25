@@ -4,16 +4,17 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { Model } from 'mongoose';
 import { Post } from './schemas/post.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { User } from 'src/user/schemas/user.schema';
 import { UploadMediaDto } from './dto/upload-media.dto';
 import { DeleteMediaDto, DeleteMultipleMediaDto } from './dto/delete-media.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { AddReactionDto } from './dto/add-reaction.dto';
+import { ReactionService } from 'src/reaction/reaction.service';
 
 @Injectable()
 export class PostService {
   constructor(
     @InjectModel(Post.name) private postModel: Model<Post>,
-    @InjectModel(User.name) private userModel: Model<User>,
+    private reactionService: ReactionService,
     private cloudinaryService: CloudinaryService,
   ) {}
 
@@ -79,5 +80,20 @@ export class PostService {
     const post = await this.postModel.findByIdAndDelete(id);
     if (!post) throw new NotFoundException('Post not found');
     return `This action removes a #${id} post`;
+  }
+
+  async addReaction(addReactionDto: AddReactionDto, currentUser: IUserPayload) {
+    const { postId, type } = addReactionDto;
+    const existingReaction = await this.reactionService.findExisting(
+      postId,
+      currentUser._id,
+    );
+
+    if (existingReaction) {
+      if (type === existingReaction.type) return;
+      await this.reactionService.update(existingReaction._id.toString(), type);
+    } else {
+      await this.reactionService.create(addReactionDto, currentUser);
+    }
   }
 }

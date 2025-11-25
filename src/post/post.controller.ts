@@ -20,6 +20,7 @@ import { CurrentUser } from 'src/_cores/decorators/current-user.decorator';
 import { ParseObjectIdPipe } from '@nestjs/mongoose';
 import { UploadMediaDto } from './dto/upload-media.dto';
 import { DeleteMediaDto, DeleteMultipleMediaDto } from './dto/delete-media.dto';
+import { AddReactionDto } from './dto/add-reaction.dto';
 
 @Controller('posts')
 @TransformDTO(ResponsePostDto)
@@ -57,6 +58,14 @@ export class PostController {
     @Param('id', ParseObjectIdPipe) id: string,
   ) {
     return this.postService.deleteMultipleMedia(id, deleteMultipleMediaDto);
+  }
+
+  @Post('reaction')
+  addReaction(
+    @Body() addReactionDto: AddReactionDto,
+    @CurrentUser() currentUser: IUserPayload,
+  ) {
+    return this.postService.addReaction(addReactionDto, currentUser);
   }
 
   @Roles('admin')
