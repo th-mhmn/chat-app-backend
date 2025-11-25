@@ -37,6 +37,8 @@ export class Post {
   content: string;
   @Prop({ default: [] })
   mediaFiles: MediaType[];
+  @Prop({ default: {} })
+  reactionsCount: Map<IReaction, number>;
   @Prop({ enum: ['public', 'private', 'friends'], default: 'public' })
   visibility: IVisibility;
 }
