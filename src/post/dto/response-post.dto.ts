@@ -25,6 +25,9 @@ export class ResponsePostDto {
   reactionsCount: Map<IReaction, number>;
 
   @Expose()
+  myReaction: IReaction;
+
+  @Expose()
   @Transform(({ obj }: { obj: PostDocument }) => obj.author._id)
   authorId: string;
 

@@ -77,15 +77,17 @@ export class PostController {
     return this.postService.removeReaction(removeReactionDto, currentUser);
   }
 
-  @Roles('admin')
   @Get()
-  findAll() {
-    return this.postService.findAll();
+  findAll(@CurrentUser() currentUser: IUserPayload) {
+    return this.postService.findAll(currentUser);
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseObjectIdPipe) id: string) {
-    return this.postService.findOne(id);
+  findOne(
+    @Param('id', ParseObjectIdPipe) id: string,
+    @CurrentUser() currentUser: IUserPayload,
+  ) {
+    return this.postService.findOneWithMyReaction(id, currentUser);
   }
 
   @Roles('admin', 'user')
