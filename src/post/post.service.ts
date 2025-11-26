@@ -64,8 +64,10 @@ export class PostService {
     return this.postModel.find().populate('author');
   }
 
-  findOne(id: string) {
-    return this.postModel.findById(id);
+  async findOne(id: string) {
+    const post = await this.postModel.findById(id);
+    if (!post) throw new NotFoundException('Post not found');
+    return post;
   }
 
   async update(id: string, updatePostDto: UpdatePostDto) {
@@ -84,16 +86,31 @@ export class PostService {
 
   async addReaction(addReactionDto: AddReactionDto, currentUser: IUserPayload) {
     const { postId, type } = addReactionDto;
+    const post = await this.findOne(postId);
+
     const existingReaction = await this.reactionService.findExisting(
       postId,
       currentUser._id,
     );
 
+    let previousReactionType: IReaction | null = null;
+
     if (existingReaction) {
       if (type === existingReaction.type) return;
+      previousReactionType = existingReaction.type;
       await this.reactionService.update(existingReaction._id.toString(), type);
     } else {
       await this.reactionService.create(addReactionDto, currentUser);
     }
+    const reactionCounts = post.reactionsCount;
+    if (previousReactionType) {
+      const value = reactionCounts.get(previousReactionType) || 0;
+      reactionCounts.set(previousReactionType, value - 1 >= 0 ? value - 1 : 0);
+    }
+    const value = reactionCounts.get(type) || 0;
+    reactionCounts.set(type, value + 1);
+
+    post.reactionsCount = reactionCounts;
+    await post.save();
   }
 }
