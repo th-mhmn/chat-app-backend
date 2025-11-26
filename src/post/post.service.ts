@@ -9,6 +9,7 @@ import { DeleteMediaDto, DeleteMultipleMediaDto } from './dto/delete-media.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { AddReactionDto } from './dto/add-reaction.dto';
 import { ReactionService } from 'src/reaction/reaction.service';
+import { RemoveReactionDto } from './dto/remove-reaction.dto';
 
 @Injectable()
 export class PostService {
@@ -112,5 +113,25 @@ export class PostService {
 
     post.reactionsCount = reactionCounts;
     await post.save();
+  }
+
+  async removeReaction(
+    removeReactionDto: RemoveReactionDto,
+    currentUser: IUserPayload,
+  ) {
+    const { postId } = removeReactionDto;
+
+    const existingReaction = await this.reactionService.findExisting(
+      postId,
+      currentUser._id,
+    );
+
+    if (!existingReaction) throw new NotFoundException('Reaction not found');
+
+    await this.reactionService.remove(existingReaction._id.toString());
+
+    await this.postModel.findByIdAndUpdate(postId, {
+      $inc: { [`reactionsCount.${existingReaction.type}`]: -1 },
+    });
   }
 }

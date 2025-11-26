@@ -22,8 +22,9 @@ export class ReactionService {
     return `This action returns all reaction`;
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} reaction`;
+  async findOne(id: string) {
+    const reaction = this.reactionModel.findById(id);
+    if (!reaction) throw new NotFoundException('Reaction not found');
   }
 
   async findExisting(postId: string, userId: string) {
@@ -42,7 +43,8 @@ export class ReactionService {
     return reaction;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} reaction`;
+  async remove(id: string) {
+    const reaction = await this.reactionModel.findByIdAndDelete(id);
+    if (!reaction) throw new NotFoundException('Reaction not found');
   }
 }

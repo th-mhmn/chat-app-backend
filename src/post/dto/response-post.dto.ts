@@ -21,6 +21,10 @@ export class ResponsePostDto {
   visibility: IVisibility;
 
   @Expose()
+  @Transform(({ obj }) => obj.reactionsCount)
+  reactionsCount: Map<IReaction, number>;
+
+  @Expose()
   @Transform(({ obj }: { obj: PostDocument }) => obj.author._id)
   authorId: string;
 

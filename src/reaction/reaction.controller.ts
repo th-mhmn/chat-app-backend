@@ -1,6 +1,5 @@
-import { Controller, Get, Post, Body, Param, Delete } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { ReactionService } from './reaction.service';
-import { CreateReactionDto } from './dto/create-reaction.dto';
 
 @Controller('reaction')
 export class ReactionController {
@@ -9,15 +8,5 @@ export class ReactionController {
   @Get()
   findAll() {
     return this.reactionService.findAll();
-  }
-
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.reactionService.findOne(+id);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.reactionService.remove(+id);
   }
 }
