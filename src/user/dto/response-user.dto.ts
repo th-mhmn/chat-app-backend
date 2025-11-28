@@ -6,6 +6,12 @@ export class ResponseUserDto {
   @ConvertObjectId()
   _id: string;
   @Expose()
+  bio: string;
+  @Expose()
+  birthDate: Date;
+  @Expose()
+  phoneNumber: string;
+  @Expose()
   name: string;
   @Expose()
   email: string;
