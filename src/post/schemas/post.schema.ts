@@ -1,22 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Expose, Transform } from 'class-transformer';
 import mongoose, { HydratedDocument } from 'mongoose';
+import { MediaType } from 'src/_cores/globals/class';
 import { type UserDocument } from 'src/user/schemas/user.schema';
 
 export type PostDocument = HydratedDocument<Post>;
-
-export class MediaType {
-  @Expose()
-  version: number;
-  @Expose()
-  display_name: string;
-  @Expose()
-  public_id: string;
-  @Expose()
-  format: string;
-  @Expose()
-  resource_type: string;
-}
 
 export class MediaTypeWithUrl extends MediaType {
   @Expose()
