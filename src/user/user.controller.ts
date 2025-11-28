@@ -17,6 +17,7 @@ import { TransformDTO } from 'src/_cores/interceptors/transform-dto.interceptor'
 import { ResponseUserDto } from './dto/response-user.dto';
 import { RoleGuard } from 'src/_cores/guards/role.guard';
 import { Roles } from 'src/_cores/decorators/roles.decorator';
+import { ParseObjectIdPipe } from '@nestjs/mongoose';
 
 @Controller('users')
 @UseGuards(AuthGuard, RoleGuard)
@@ -36,7 +37,6 @@ export class UserController {
   }
 
   @Get()
-  @Roles('admin')
   findAll() {
     return this.userService.findAll();
   }
@@ -44,17 +44,20 @@ export class UserController {
   @Get(':id')
   @Roles('admin', 'user')
   findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+    return this.userService.findOne(id);
   }
 
   @Patch(':id')
-  @Roles('admin')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
+  @Roles('admin', 'user')
+  update(
+    @Param('id', ParseObjectIdPipe) id: string,
+    @Body() updateUserDto: UpdateUserDto,
+  ) {
+    return this.userService.update(id, updateUserDto);
   }
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+    return this.userService.remove(id);
   }
 }
