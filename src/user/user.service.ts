@@ -14,7 +14,7 @@ export class UserService {
   }
 
   findAll() {
-    return this.userModel.find();
+    return this.userModel.find({ isActive: true });
   }
 
   async findOne(id: string) {
@@ -39,7 +39,10 @@ export class UserService {
     return user;
   }
 
-  remove(id: string) {
-    return `This action removes a #${id} user`;
+  async remove(id: string) {
+    const user = await this.userModel.findByIdAndUpdate(id, {
+      isActive: false,
+    });
+    if (!user) throw new NotFoundException('User not found');
   }
 }
