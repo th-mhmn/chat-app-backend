@@ -9,7 +9,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UserService } from './user.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from 'src/_cores/guards/auth.guard';
 import { CurrentUser } from 'src/_cores/decorators/current-user.decorator';
@@ -25,12 +24,6 @@ import { ParseObjectIdPipe } from '@nestjs/mongoose';
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
-  @Post()
-  @Roles('admin')
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
-  }
-
   @Get('/profile')
   getCurrentUser(@CurrentUser() currentUser: IUserPayload) {
     return this.userService.getCurrentUser(currentUser);
@@ -42,8 +35,7 @@ export class UserController {
   }
 
   @Get(':id')
-  @Roles('admin', 'user')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id', ParseObjectIdPipe) id: string) {
     return this.userService.findOne(id);
   }
 
@@ -57,7 +49,8 @@ export class UserController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
+  @Roles('admin')
+  remove(@Param('id', ParseObjectIdPipe) id: string) {
     return this.userService.remove(id);
   }
 }
