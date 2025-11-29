@@ -23,6 +23,10 @@ export class UserService {
     return user;
   }
 
+  getCurrentUser(currentUser: IUserPayload) {
+    return this.userModel.findById(currentUser._id);
+  }
+
   async update(id: string, updateUserDto: UpdateUserDto) {
     const user = await this.userModel.findByIdAndUpdate(
       id,

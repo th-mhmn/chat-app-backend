@@ -33,7 +33,7 @@ export class UserController {
 
   @Get('/profile')
   getCurrentUser(@CurrentUser() currentUser: IUserPayload) {
-    return currentUser;
+    return this.userService.getCurrentUser(currentUser);
   }
 
   @Get()
