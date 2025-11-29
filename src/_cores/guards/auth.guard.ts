@@ -26,6 +26,7 @@ export class AuthGuard implements CanActivate {
         name: decodedUser.name,
         email: decodedUser.email,
         role: decodedUser.role,
+        isActive: decodedUser.isActive,
       };
       request.currentUser = user;
     } catch (error) {

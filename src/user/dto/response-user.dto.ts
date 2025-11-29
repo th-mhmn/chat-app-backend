@@ -6,6 +6,8 @@ export class ResponseUserDto {
   @ConvertObjectId()
   _id: string;
   @Expose()
+  username: string;
+  @Expose()
   bio: string;
   @Expose()
   birthDate: Date;
@@ -17,4 +19,6 @@ export class ResponseUserDto {
   email: string;
   @Expose()
   role: string;
+  @Expose()
+  isActive: boolean;
 }
