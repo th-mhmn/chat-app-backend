@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { MediaType } from 'src/_cores/globals/class';
+import { MediaType } from 'src/_cores/globals/classes';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -12,6 +12,8 @@ export class User {
   bio?: string;
   @Prop()
   avatar?: MediaType;
+  @Prop()
+  coverPhoto?: MediaType;
   @Prop()
   email: string;
   @Prop()

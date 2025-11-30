@@ -1,5 +1,6 @@
-import { Expose } from 'class-transformer';
+import { Expose, Transform } from 'class-transformer';
 import { ConvertObjectId } from 'src/_cores/decorators/convert-object-id.decorator';
+import { transformMediaUrl } from 'src/_cores/globals/functions';
 
 export class ResponseUserDto {
   @Expose()
@@ -17,6 +18,9 @@ export class ResponseUserDto {
   name: string;
   @Expose()
   email: string;
+  @Expose()
+  @Transform(({ obj }) => transformMediaUrl(obj.avatar))
+  avatarUrl: string;
   @Expose()
   role: string;
   @Expose()
