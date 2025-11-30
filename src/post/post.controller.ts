@@ -18,10 +18,10 @@ import { TransformDTO } from 'src/_cores/interceptors/transform-dto.interceptor'
 import { ResponsePostDto } from './dto/response-post.dto';
 import { CurrentUser } from 'src/_cores/decorators/current-user.decorator';
 import { ParseObjectIdPipe } from '@nestjs/mongoose';
-import { UploadMediaDto } from './dto/upload-media.dto';
 import { DeleteMediaDto, DeleteMultipleMediaDto } from './dto/delete-media.dto';
 import { AddReactionDto } from './dto/add-reaction.dto';
 import { RemoveReactionDto } from './dto/remove-reaction.dto';
+import { UploadMediaDto } from 'src/_cores/globals/dtos';
 
 @Controller('posts')
 @TransformDTO(ResponsePostDto)

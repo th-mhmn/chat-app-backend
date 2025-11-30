@@ -4,12 +4,12 @@ import { UpdatePostDto } from './dto/update-post.dto';
 import { Model } from 'mongoose';
 import { Post } from './schemas/post.schema';
 import { InjectModel } from '@nestjs/mongoose';
-import { UploadMediaDto } from './dto/upload-media.dto';
 import { DeleteMediaDto, DeleteMultipleMediaDto } from './dto/delete-media.dto';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { AddReactionDto } from './dto/add-reaction.dto';
 import { ReactionService } from 'src/reaction/reaction.service';
 import { RemoveReactionDto } from './dto/remove-reaction.dto';
+import { UploadMediaDto } from 'src/_cores/globals/dtos';
 
 @Injectable()
 export class PostService {
