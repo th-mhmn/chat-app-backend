@@ -17,6 +17,7 @@ import { ResponseUserDto } from './dto/response-user.dto';
 import { RoleGuard } from 'src/_cores/guards/role.guard';
 import { Roles } from 'src/_cores/decorators/roles.decorator';
 import { ParseObjectIdPipe } from '@nestjs/mongoose';
+import { UploadMediaDto } from 'src/_cores/globals/dtos';
 
 @Controller('users')
 @UseGuards(AuthGuard, RoleGuard)
@@ -27,6 +28,14 @@ export class UserController {
   @Get('/profile')
   getCurrentUser(@CurrentUser() currentUser: IUserPayload) {
     return this.userService.getCurrentUser(currentUser);
+  }
+
+  @Post('/upload-avatar')
+  uploadAvatar(
+    @Body() uploadMediaDto: UploadMediaDto,
+    @CurrentUser() currentUser: IUserPayload,
+  ) {
+    return this.userService.uploadAvatar(uploadMediaDto, currentUser);
   }
 
   @Get()

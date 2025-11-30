@@ -1,17 +1,13 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { Model } from 'mongoose';
 import { User } from './schemas/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
+import { UploadMediaDto } from './../_cores/globals/dtos';
 
 @Injectable()
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
-
-  create(createUserDto: CreateUserDto) {
-    return 'This action adds a new user';
-  }
 
   findAll() {
     return this.userModel.find({ isActive: true });
@@ -44,5 +40,17 @@ export class UserService {
       isActive: false,
     });
     if (!user) throw new NotFoundException('User not found');
+  }
+
+  async uploadAvatar(
+    uploadMediaDto: UploadMediaDto,
+    currentUser: IUserPayload,
+  ) {
+    const user = await this.userModel.findById(currentUser._id);
+    console.log(user);
+    if (!user) throw new NotFoundException('User not found');
+
+    user.avatar = uploadMediaDto;
+    return user.save();
   }
 }
