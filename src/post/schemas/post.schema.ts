@@ -1,17 +1,15 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Expose, Transform } from 'class-transformer';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { MediaType } from 'src/_cores/globals/class';
+import { MediaType } from 'src/_cores/globals/classes';
+import { transformMediaUrl } from 'src/_cores/globals/functions';
 import { type UserDocument } from 'src/user/schemas/user.schema';
 
 export type PostDocument = HydratedDocument<Post>;
 
 export class MediaTypeWithUrl extends MediaType {
   @Expose()
-  @Transform(
-    ({ obj }) =>
-      `https://res.cloudinary.com/${process.env.CLOUDINARY_NAME}/${obj.resource_type}/upload/v${obj.version}/${obj.display_name}`,
-  )
+  @Transform(({ obj }) => transformMediaUrl(obj))
   url: string;
 }
 
