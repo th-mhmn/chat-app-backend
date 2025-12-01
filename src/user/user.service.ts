@@ -9,8 +9,15 @@ import { UploadMediaDto } from './../_cores/globals/dtos';
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-  findAll() {
-    return this.userModel.find({ isActive: true });
+  findAll(q: string) {
+    const query: Record<string, any> = { isActive: true };
+    if (q && q.trim() !== '') {
+      query.$or = [
+        { username: { $regex: q, $options: 'i' } },
+        { email: { $regex: q, $options: 'i' } },
+      ];
+    }
+    return this.userModel.find(query);
   }
 
   async findOne(id: string) {
