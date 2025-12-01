@@ -9,6 +9,8 @@ import { PostModule } from './post/post.module';
 import { ResourceModule } from './resource/resource.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { ReactionModule } from './reaction/reaction.module';
+import { ConversationModule } from './conversation/conversation.module';
+import { MessageModule } from './message/message.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -27,6 +29,8 @@ import { ReactionModule } from './reaction/reaction.module';
     ResourceModule,
     CloudinaryModule,
     ReactionModule,
+    ConversationModule,
+    MessageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
