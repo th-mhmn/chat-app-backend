@@ -8,6 +8,8 @@ import {
   Delete,
   UseGuards,
   Query,
+  ParseIntPipe,
+  DefaultValuePipe,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -40,8 +42,12 @@ export class UserController {
   }
 
   @Get()
-  findAll(@Query('q') q: string) {
-    return this.userService.findAll(q);
+  findAll(
+    @Query('q') q: string,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('cursor') cursor: string,
+  ) {
+    return this.userService.findAll(q, limit, cursor);
   }
 
   @Get(':id')

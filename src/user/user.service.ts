@@ -9,7 +9,7 @@ import { UploadMediaDto } from './../_cores/globals/dtos';
 export class UserService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-  findAll(q: string) {
+  async findAll(q: string, limit: number, cursor: string) {
     const query: Record<string, any> = { isActive: true };
     if (q && q.trim() !== '') {
       query.$or = [
@@ -17,7 +17,23 @@ export class UserService {
         { email: { $regex: q, $options: 'i' } },
       ];
     }
-    return this.userModel.find(query);
+
+    if (cursor) query.name = { $gt: cursor };
+
+    const users = await this.userModel
+      .find(query)
+      .sort({ username: 1 })
+      .limit(limit + 1)
+      .lean();
+
+    const hasNextPage = users.length > limit;
+    const items = hasNextPage ? users.slice(0, 1) : users;
+
+    return {
+      items,
+      hasNextPage,
+      cursor: hasNextPage ? users[users.length - 1].username : null,
+    };
   }
 
   async findOne(id: string) {
