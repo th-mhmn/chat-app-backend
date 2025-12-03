@@ -9,7 +9,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ConversationService } from './conversation.service';
-import { CreateConversationDto } from './dto/create-conversation.dto';
+import { CreateGroupConversationDto } from './dto/create-group-conversation.dto';
 import { UpdateConversationDto } from './dto/update-conversation.dto';
 import { CreatePrivateConversationDto } from './dto/create-private-conversation.dto';
 import { CurrentUser } from 'src/_cores/decorators/current-user.decorator';
@@ -31,9 +31,15 @@ export class ConversationController {
     );
   }
 
-  @Post()
-  create(@Body() createConversationDto: CreateConversationDto) {
-    return this.conversationService.create(createConversationDto);
+  @Post('/group')
+  create(
+    @Body() createGroupConversationDto: CreateGroupConversationDto,
+    @CurrentUser() currentUser: IUserPayload,
+  ) {
+    return this.conversationService.createGroup(
+      createGroupConversationDto,
+      currentUser,
+    );
   }
 
   @Get()
