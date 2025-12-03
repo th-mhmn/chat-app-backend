@@ -1,5 +1,5 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CreateConversationDto } from './dto/create-conversation.dto';
+import { CreateGroupConversationDto } from './dto/create-group-conversation.dto';
 import { UpdateConversationDto } from './dto/update-conversation.dto';
 import { CreatePrivateConversationDto } from './dto/create-private-conversation.dto';
 import { Conversation } from './schemas/conversation.schema';
@@ -39,8 +39,24 @@ export class ConversationService {
     return conversation.save();
   }
 
-  create(createConversationDto: CreateConversationDto) {
-    return 'This action adds a new conversation';
+  createGroup(
+    createGroupConversationDto: CreateGroupConversationDto,
+    currentUser: IUserPayload,
+  ) {
+    const { participantIds, groupName, groupAvatar } =
+      createGroupConversationDto;
+    if (participantIds.includes(currentUser._id))
+      throw new BadRequestException(
+        'You cannot create a group with your own id in participants array',
+      );
+    const conversation = new this.conversationModel({
+      isGroup: true,
+      groupName,
+      groupAvatar,
+      groupOwner: currentUser._id,
+      participants: [currentUser._id, ...participantIds],
+    });
+    return conversation.save();
   }
 
   findAll() {
