@@ -59,8 +59,10 @@ export class ConversationService {
     return conversation.save();
   }
 
-  findAll() {
-    return `This action returns all conversation`;
+  findAll(currentUser: IUserPayload) {
+    return this.conversationModel.find({
+      participants: { $in: [currentUser._id] },
+    });
   }
 
   findOne(id: number) {
