@@ -15,7 +15,7 @@ import { CreatePrivateConversationDto } from './dto/create-private-conversation.
 import { CurrentUser } from 'src/_cores/decorators/current-user.decorator';
 import { AuthGuard } from 'src/_cores/guards/auth.guard';
 
-@Controller('conversation')
+@Controller('conversations')
 @UseGuards(AuthGuard)
 export class ConversationController {
   constructor(private readonly conversationService: ConversationService) {}
@@ -43,8 +43,8 @@ export class ConversationController {
   }
 
   @Get()
-  findAll() {
-    return this.conversationService.findAll();
+  findAll(@CurrentUser() currentUser: IUserPayload) {
+    return this.conversationService.findAll(currentUser);
   }
 
   @Get(':id')
