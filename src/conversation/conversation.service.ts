@@ -56,13 +56,33 @@ export class ConversationService {
       groupOwner: currentUser._id,
       participants: [currentUser._id, ...participantIds],
     });
+
     return conversation.save();
   }
 
-  findAll(currentUser: IUserPayload) {
-    return this.conversationModel.find({
+  async findAll(currentUser: IUserPayload, limit: number, cursor: string) {
+    const query: Record<string, any> = {
       participants: { $in: [currentUser._id] },
-    });
+    };
+
+    if (cursor) query.updatedAt = { $lt: new Date(cursor) };
+
+    const conversations = await this.conversationModel
+      .find(query)
+      .populate('lastMessage')
+      .sort({ updatedAt: -1 })
+      .limit(limit + 1)
+      .populate('participants', 'name avatar')
+      .lean();
+
+    const hasNextPage = conversations.length > limit;
+    const items = hasNextPage ? conversations.slice(0, limit) : conversations;
+
+    return {
+      items,
+      hasNextPage,
+      cursor: hasNextPage ? items[items.length - 1].updatedAt : null,
+    };
   }
 
   findOne(id: number) {

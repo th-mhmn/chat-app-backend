@@ -7,6 +7,9 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
+  DefaultValuePipe,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { ConversationService } from './conversation.service';
 import { CreateGroupConversationDto } from './dto/create-group-conversation.dto';
@@ -14,9 +17,12 @@ import { UpdateConversationDto } from './dto/update-conversation.dto';
 import { CreatePrivateConversationDto } from './dto/create-private-conversation.dto';
 import { CurrentUser } from 'src/_cores/decorators/current-user.decorator';
 import { AuthGuard } from 'src/_cores/guards/auth.guard';
+import { TransformDTO } from 'src/_cores/interceptors/transform-dto.interceptor';
+import { ResponseConversationDto } from './dto/response-conversation-dto';
 
 @Controller('conversations')
 @UseGuards(AuthGuard)
+@TransformDTO(ResponseConversationDto)
 export class ConversationController {
   constructor(private readonly conversationService: ConversationService) {}
 
@@ -43,8 +49,12 @@ export class ConversationController {
   }
 
   @Get()
-  findAll(@CurrentUser() currentUser: IUserPayload) {
-    return this.conversationService.findAll(currentUser);
+  findAll(
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('cursor') cursor: string,
+    @CurrentUser() currentUser: IUserPayload,
+  ) {
+    return this.conversationService.findAll(currentUser, limit, cursor);
   }
 
   @Get(':id')
