@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { ConversationService } from './conversation.service';
 import { CreateGroupConversationDto } from './dto/create-group-conversation.dto';
-import { UpdateConversationDto } from './dto/update-conversation.dto';
+import { UpdateGroupConversationDto } from './dto/update-group-conversation.dto';
 import { CreatePrivateConversationDto } from './dto/create-private-conversation.dto';
 import { CurrentUser } from 'src/_cores/decorators/current-user.decorator';
 import { AuthGuard } from 'src/_cores/guards/auth.guard';
@@ -63,12 +63,17 @@ export class ConversationController {
     return this.conversationService.findOne(id);
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateConversationDto: UpdateConversationDto,
+  @Patch('/group/:id')
+  updateGroup(
+    @Param('id', ParseObjectIdPipe) id: string,
+    @Body() updateGroupConversationDto: UpdateGroupConversationDto,
+    @CurrentUser() currentUser: IUserPayload,
   ) {
-    return this.conversationService.update(+id, updateConversationDto);
+    return this.conversationService.updateGroup(
+      id,
+      updateGroupConversationDto,
+      currentUser,
+    );
   }
 
   @Delete(':id')

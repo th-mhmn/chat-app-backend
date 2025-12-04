@@ -1,10 +1,11 @@
 import {
   BadRequestException,
+  ForbiddenException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
 import { CreateGroupConversationDto } from './dto/create-group-conversation.dto';
-import { UpdateConversationDto } from './dto/update-conversation.dto';
+import { UpdateGroupConversationDto } from './dto/update-group-conversation.dto';
 import { CreatePrivateConversationDto } from './dto/create-private-conversation.dto';
 import { Conversation } from './schemas/conversation.schema';
 import { InjectModel } from '@nestjs/mongoose';
@@ -97,8 +98,24 @@ export class ConversationService {
     return conversation;
   }
 
-  update(id: number, updateConversationDto: UpdateConversationDto) {
-    return `This action updates a #${id} conversation`;
+  async updateGroup(
+    id: string,
+    updateGroupConversationDto: UpdateGroupConversationDto,
+    currentUser: IUserPayload,
+  ) {
+    const conversation = await this.conversationModel.findById(id);
+    if (!conversation) throw new NotFoundException('Conversation not found');
+    if (currentUser._id !== conversation.groupOwner?._id.toString())
+      throw new ForbiddenException(
+        'You are not able to delete this conversation',
+      );
+
+    const { groupAvatar, groupName } = updateGroupConversationDto;
+
+    conversation.groupAvatar = groupAvatar ?? conversation.groupAvatar;
+    conversation.groupName = groupName ?? conversation.groupName;
+
+    return conversation.save();
   }
 
   remove(id: number) {
