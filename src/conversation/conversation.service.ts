@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateGroupConversationDto } from './dto/create-group-conversation.dto';
 import { UpdateConversationDto } from './dto/update-conversation.dto';
 import { CreatePrivateConversationDto } from './dto/create-private-conversation.dto';
@@ -85,8 +89,12 @@ export class ConversationService {
     };
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} conversation`;
+  async findOne(id: string) {
+    const conversation = await this.conversationModel
+      .findById(id)
+      .populate('participants');
+    if (!conversation) throw new NotFoundException('Conversation not found');
+    return conversation;
   }
 
   update(id: number, updateConversationDto: UpdateConversationDto) {

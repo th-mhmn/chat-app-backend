@@ -19,6 +19,7 @@ import { CurrentUser } from 'src/_cores/decorators/current-user.decorator';
 import { AuthGuard } from 'src/_cores/guards/auth.guard';
 import { TransformDTO } from 'src/_cores/interceptors/transform-dto.interceptor';
 import { ResponseConversationDto } from './dto/response-conversation-dto';
+import { ParseObjectIdPipe } from '@nestjs/mongoose';
 
 @Controller('conversations')
 @UseGuards(AuthGuard)
@@ -58,8 +59,8 @@ export class ConversationController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.conversationService.findOne(+id);
+  findOne(@Param('id', ParseObjectIdPipe) id: string) {
+    return this.conversationService.findOne(id);
   }
 
   @Patch(':id')
