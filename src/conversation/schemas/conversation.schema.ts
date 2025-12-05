@@ -26,6 +26,9 @@ export class Conversation {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Message' })
   lastMessage?: MessageDocument;
 
+  @Prop({ default: true })
+  isActive: boolean;
+
   createdAt: Date;
   updatedAt: Date;
 }

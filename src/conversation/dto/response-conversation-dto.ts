@@ -47,6 +47,9 @@ export class ResponseConversationDto {
   groupAvatarUrl: string;
 
   @Expose()
+  isActive: boolean;
+
+  @Expose()
   createdAt: Date;
 
   @Expose()
