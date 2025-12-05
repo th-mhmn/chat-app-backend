@@ -24,7 +24,6 @@ export class MessageService {
     const message = await new this.messageModel({
       conversation: conversationId,
       sender: currentUser._id,
-      seenBy: [currentUser._id],
       text,
       mediaFiles,
     });
