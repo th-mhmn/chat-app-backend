@@ -69,4 +69,12 @@ export class MessageController {
   ) {
     return this.messageService.remove(id, currentUser);
   }
+
+  @Patch(':id/seen')
+  markMessageAsSeen(
+    @Param('id', ParseObjectIdPipe) id: string,
+    @CurrentUser() currentUser: IUserPayload,
+  ) {
+    return this.messageService.markMessageAsSeen(id, currentUser);
+  }
 }
