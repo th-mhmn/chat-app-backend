@@ -73,6 +73,7 @@ export class ConversationService {
   async findAll(currentUser: IUserPayload, limit: number, cursor: string) {
     const query: Record<string, any> = {
       participants: { $in: [currentUser._id] },
+      isActive: true,
     };
 
     if (cursor) query.updatedAt = { $lt: new Date(cursor) };
@@ -99,7 +100,8 @@ export class ConversationService {
     const conversation = await this.conversationModel
       .findById(id)
       .populate('participants');
-    if (!conversation) throw new NotFoundException('Conversation not found');
+    if (!conversation || !conversation.isActive)
+      throw new NotFoundException('Conversation not found');
     return conversation;
   }
 
@@ -109,7 +111,8 @@ export class ConversationService {
     currentUser: IUserPayload,
   ) {
     const conversation = await this.conversationModel.findById(id);
-    if (!conversation) throw new NotFoundException('Conversation not found');
+    if (!conversation || !conversation.isActive)
+      throw new NotFoundException('Conversation not found');
     if (currentUser._id !== conversation.groupOwner?._id.toString())
       throw new ForbiddenException(
         'You are not able to delete this conversation',
@@ -129,7 +132,7 @@ export class ConversationService {
     addParticipantsDto: AddParticipantsDto,
   ) {
     const conversation = await this.conversationModel.findById(id);
-    if (!conversation || !conversation.isGroup)
+    if (!conversation || !conversation.isGroup || !conversation.isActive)
       throw new NotFoundException('Conversation/Group not found');
 
     if (conversation.groupOwner?._id.toString() !== currentUser._id)
@@ -165,7 +168,7 @@ export class ConversationService {
     removeParticipantsDto: RemoveParticipantsDto,
   ) {
     const conversation = await this.conversationModel.findById(id);
-    if (!conversation || !conversation.isGroup)
+    if (!conversation || !conversation.isGroup || !conversation.isActive)
       throw new NotFoundException('Conversation/Group not found');
 
     if (conversation.groupOwner?._id.toString() !== currentUser._id)
@@ -187,7 +190,20 @@ export class ConversationService {
     conversation.save();
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} conversation`;
+  async remove(id: string, currentUser: IUserPayload) {
+    const conversation = await this.conversationModel.findById(id);
+    if (!conversation || !conversation.isActive)
+      throw new NotFoundException('Conversation not found');
+
+    if (
+      conversation.isGroup &&
+      conversation?.groupOwner?._id.toString() !== currentUser._id.toString()
+    )
+      throw new ForbiddenException(
+        'You are not allowed to remove this conversation',
+      );
+
+    conversation.isActive = false;
+    conversation.save();
   }
 }
