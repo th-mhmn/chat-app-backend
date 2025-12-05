@@ -9,6 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Message } from './schemas/message.schema';
 import { Model } from 'mongoose';
 import { ConversationService } from 'src/conversation/conversation.service';
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class MessageService {
@@ -16,6 +17,7 @@ export class MessageService {
     @InjectModel(Message.name)
     private messageModel: Model<Message>,
     private conversationService: ConversationService,
+    private userService: UserService,
   ) {}
 
   async sendMessage(
@@ -104,6 +106,19 @@ export class MessageService {
         'You are not allowed to delete this message',
       );
     message.isDeleted = true;
+    message.save();
+  }
+
+  async markMessageAsSeen(id: string, currentUser: IUserPayload) {
+    const message = await this.findOne(id);
+    const alreadySeen = message.seenBy.some(
+      (u) => u._id.toString() === currentUser._id,
+    );
+    if (alreadySeen) return;
+    if (currentUser._id === message.sender._id.toString()) return;
+    const userDocument = await this.userService.findOne(currentUser._id);
+    message.seenBy.push(userDocument);
+    message.isSeen ||= true;
     message.save();
   }
 }
