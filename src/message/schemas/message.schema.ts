@@ -28,6 +28,11 @@ export class Message {
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   seenBy: UserDocument;
+
+  @Prop()
+  createdAt: Date;
+  @Prop()
+  updatedAt: Date;
 }
 
 export const MessageSchema = SchemaFactory.createForClass(Message);
