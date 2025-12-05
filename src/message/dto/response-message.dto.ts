@@ -33,7 +33,7 @@ export class ResponseMessageDto {
   @Expose()
   text: string;
   @Expose()
-  @Transform(({ obj }) => console.log(obj?.mediaFiles))
+  @Transform(({ obj }) => transformMediaUrl(obj?.mediaFiles))
   mediaFiles: string[];
   @Expose()
   isDeleted: boolean;
