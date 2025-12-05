@@ -42,6 +42,9 @@ export class ResponseMessageDto {
   seenBy: SeenByDto;
 
   @Expose()
+  isSeen: boolean;
+
+  @Expose()
   isEdited: boolean;
 
   @Expose()
