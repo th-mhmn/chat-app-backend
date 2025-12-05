@@ -70,7 +70,7 @@ export class UserService {
     currentUser: IUserPayload,
   ) {
     const user = await this.userModel.findById(currentUser._id);
-    console.log(user);
+
     if (!user) throw new NotFoundException('User not found');
 
     user.avatar = uploadMediaDto;
