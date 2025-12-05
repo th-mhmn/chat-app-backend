@@ -7,6 +7,9 @@ import {
   Param,
   Delete,
   UseGuards,
+  DefaultValuePipe,
+  Query,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { MessageService } from './message.service';
 import { SendMessageDto } from './dto/send-message.dto';
@@ -39,8 +42,10 @@ export class MessageController {
   @Get('/conversation/:conversationId')
   getAllMessages(
     @Param('conversationId', ParseObjectIdPipe) conversationId: string,
+    @Query('limit', new DefaultValuePipe(10), ParseIntPipe) limit: number,
+    @Query('cursor') cursor: string,
   ) {
-    return this.messageService.getAllMessages(conversationId);
+    return this.messageService.getAllMessages(conversationId, limit, cursor);
   }
 
   @Get(':id')
