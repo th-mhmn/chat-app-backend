@@ -14,9 +14,12 @@ import { UpdateMessageDto } from './dto/update-message.dto';
 import { CurrentUser } from 'src/_cores/decorators/current-user.decorator';
 import { ParseObjectIdPipe } from '@nestjs/mongoose';
 import { AuthGuard } from 'src/_cores/guards/auth.guard';
+import { TransformDTO } from 'src/_cores/interceptors/transform-dto.interceptor';
+import { ResponseMessageDto } from './dto/response-message.dto';
 
 @Controller('messages')
 @UseGuards(AuthGuard)
+@TransformDTO(ResponseMessageDto)
 export class MessageController {
   constructor(private readonly messageService: MessageService) {}
 
@@ -33,9 +36,11 @@ export class MessageController {
     );
   }
 
-  @Get()
-  findAll() {
-    return this.messageService.findAll();
+  @Get('/conversation/:conversationId')
+  getAllMessages(
+    @Param('conversationId', ParseObjectIdPipe) conversationId: string,
+  ) {
+    return this.messageService.getAllMessages(conversationId);
   }
 
   @Get(':id')
