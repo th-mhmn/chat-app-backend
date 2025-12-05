@@ -10,12 +10,17 @@ import { CreatePrivateConversationDto } from './dto/create-private-conversation.
 import { Conversation } from './schemas/conversation.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { AddParticipantsDto } from './dto/add-participants.dto';
+import { UserService } from 'src/user/user.service';
+import { UserDocument } from 'src/user/schemas/user.schema';
+import { RemoveParticipantsDto } from './dto/remove-participants.dto';
 
 @Injectable()
 export class ConversationService {
   constructor(
     @InjectModel(Conversation.name)
     private conversationModel: Model<Conversation>,
+    private userService: UserService,
   ) {}
 
   async createPrivate(
@@ -116,6 +121,70 @@ export class ConversationService {
     conversation.groupName = groupName ?? conversation.groupName;
 
     return conversation.save();
+  }
+
+  async addParticipants(
+    id: string,
+    currentUser: IUserPayload,
+    addParticipantsDto: AddParticipantsDto,
+  ) {
+    const conversation = await this.conversationModel.findById(id);
+    if (!conversation || !conversation.isGroup)
+      throw new NotFoundException('Conversation/Group not found');
+
+    if (conversation.groupOwner?._id.toString() !== currentUser._id)
+      throw new ForbiddenException(
+        'You are not allowed to add participants to this group',
+      );
+
+    const { participantsIds } = addParticipantsDto;
+
+    const existingParticipantsIds = conversation.participants.map((p) =>
+      p._id.toString(),
+    );
+
+    const participantsDocuments: UserDocument[] = [];
+
+    for (const participantId of participantsIds) {
+      if (existingParticipantsIds.includes(participantId)) return;
+      const userDocument = await this.userService.findOne(participantId);
+      participantsDocuments.push(userDocument);
+    }
+
+    conversation.participants = [
+      ...conversation.participants,
+      ...participantsDocuments,
+    ];
+
+    conversation.save();
+  }
+
+  async removeParticipants(
+    id: string,
+    currentUser: IUserPayload,
+    removeParticipantsDto: RemoveParticipantsDto,
+  ) {
+    const conversation = await this.conversationModel.findById(id);
+    if (!conversation || !conversation.isGroup)
+      throw new NotFoundException('Conversation/Group not found');
+
+    if (conversation.groupOwner?._id.toString() !== currentUser._id)
+      throw new ForbiddenException(
+        'You are not allowed to remove participants from this group',
+      );
+
+    const { participantsIds } = removeParticipantsDto;
+
+    if (participantsIds.includes(currentUser._id.toString()))
+      throw new BadRequestException('Cannot remove the owner');
+
+    const filteredParticipants = conversation.participants.filter(
+      (p) => !participantsIds.includes(p._id.toString()),
+    );
+
+    conversation.participants = [...filteredParticipants];
+
+    conversation.save();
   }
 
   remove(id: number) {
