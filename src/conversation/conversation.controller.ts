@@ -20,6 +20,8 @@ import { AuthGuard } from 'src/_cores/guards/auth.guard';
 import { TransformDTO } from 'src/_cores/interceptors/transform-dto.interceptor';
 import { ResponseConversationDto } from './dto/response-conversation-dto';
 import { ParseObjectIdPipe } from '@nestjs/mongoose';
+import { AddParticipantsDto } from './dto/add-participants.dto';
+import { RemoveParticipantsDto } from './dto/remove-participants.dto';
 
 @Controller('conversations')
 @UseGuards(AuthGuard)
@@ -76,6 +78,31 @@ export class ConversationController {
     );
   }
 
+  @Patch('/group/:id/members')
+  addParticipants(
+    @Param('id', ParseObjectIdPipe) id: string,
+    @Body() addParticipantsDto: AddParticipantsDto,
+    @CurrentUser() currentUser: IUserPayload,
+  ) {
+    return this.conversationService.addParticipants(
+      id,
+      currentUser,
+      addParticipantsDto,
+    );
+  }
+
+  @Delete('/group/:id/members')
+  removeParticipants(
+    @Param('id', ParseObjectIdPipe) id: string,
+    @Body() removeParticipantsDto: RemoveParticipantsDto,
+    @CurrentUser() currentUser: IUserPayload,
+  ) {
+    return this.conversationService.removeParticipants(
+      id,
+      currentUser,
+      removeParticipantsDto,
+    );
+  }
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.conversationService.remove(+id);
