@@ -43,6 +43,7 @@ export class MessageService {
   async getAllMessages(conversationId: string, limit: number, cursor: string) {
     const query: Record<string, any> = {
       conversation: conversationId,
+      isDeleted: false,
     };
 
     if (cursor) query.createdAt = { $gt: new Date(cursor) };
@@ -69,7 +70,10 @@ export class MessageService {
   }
 
   async findOne(id: string) {
-    const message = await this.messageModel.findById(id);
+    const message = await this.messageModel.findById({
+      _id: id,
+      isDeleted: false,
+    });
     if (!message) throw new NotFoundException('Message not found');
     return message;
   }
@@ -93,7 +97,13 @@ export class MessageService {
     return await message.save();
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} message`;
+  async remove(id: string, currentUser: IUserPayload) {
+    const message = await this.findOne(id);
+    if (message.sender._id.toString() !== currentUser._id)
+      throw new ForbiddenException(
+        'You are not allowed to delete this message',
+      );
+    message.isDeleted = true;
+    message.save();
   }
 }
