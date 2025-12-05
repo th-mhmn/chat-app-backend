@@ -21,7 +21,7 @@ export class MessageService {
   ) {
     const { text, mediaFiles } = sendMessageDto;
 
-    const message = new this.messageModel({
+    const message = await new this.messageModel({
       conversation: conversationId,
       sender: currentUser._id,
       seenBy: [currentUser._id],
@@ -34,7 +34,19 @@ export class MessageService {
       message._id.toString(),
     );
 
-    return message;
+    return message.save();
+  }
+
+  async getAllMessages(conversationId: string) {
+    const messages = await this.messageModel
+      .find({
+        conversation: conversationId,
+      })
+      .sort({ createdAt: 1 })
+      .populate('sender', 'name avatar')
+      .populate('seenBy', 'name avatar');
+
+    return messages;
   }
 
   findAll() {
