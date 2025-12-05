@@ -40,6 +40,10 @@ export class ResponseMessageDto {
   @Expose()
   @Type(() => SeenByDto)
   seenBy: SeenByDto;
+
+  @Expose()
+  isEdited: boolean;
+
   @Expose()
   createdAt: Date;
   @Expose()
