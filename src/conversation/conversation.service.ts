@@ -179,7 +179,7 @@ export class ConversationService {
 
     const { participantsIds } = removeParticipantsDto;
 
-    if (participantsIds.includes(currentUser._id.toString()))
+    if (participantsIds.includes(currentUser._id))
       throw new BadRequestException('Cannot remove the owner');
 
     const filteredParticipants = conversation.participants.filter(
@@ -198,7 +198,7 @@ export class ConversationService {
 
     if (
       conversation.isGroup &&
-      conversation?.groupOwner?._id.toString() !== currentUser._id.toString()
+      conversation?.groupOwner?._id.toString() !== currentUser._id
     )
       throw new ForbiddenException(
         'You are not allowed to remove this conversation',
