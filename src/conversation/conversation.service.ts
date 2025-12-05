@@ -37,6 +37,7 @@ export class ConversationService {
     const existingConversation = await this.conversationModel.findOne({
       isGroup: false,
       participants: { $all: [currentUser._id, participantId] },
+      isActive: true,
     });
 
     if (existingConversation) return existingConversation;
