@@ -26,8 +26,8 @@ export class Message {
   @Prop({ default: false })
   isSeen: boolean;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-  seenBy: UserDocument;
+  @Prop({ type: [mongoose.Schema.Types.ObjectId], ref: 'User' })
+  seenBy: UserDocument[];
 
   @Prop({ default: false })
   isEdited: boolean;
