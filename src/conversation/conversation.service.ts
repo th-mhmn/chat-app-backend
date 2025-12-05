@@ -207,4 +207,14 @@ export class ConversationService {
     conversation.isActive = false;
     conversation.save();
   }
+
+  async updateLastMessage(id: string, messageId: string) {
+    const conversation = await this.conversationModel.findByIdAndUpdate(
+      id,
+      { lastMessage: messageId },
+      { new: true },
+    );
+
+    if (!conversation) throw new NotFoundException('Conversation not found');
+  }
 }

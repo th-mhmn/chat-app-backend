@@ -1,15 +1,36 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { MessageService } from './message.service';
-import { CreateMessageDto } from './dto/create-message.dto';
+import { SendMessageDto } from './dto/send-message.dto';
 import { UpdateMessageDto } from './dto/update-message.dto';
+import { CurrentUser } from 'src/_cores/decorators/current-user.decorator';
+import { ParseObjectIdPipe } from '@nestjs/mongoose';
+import { AuthGuard } from 'src/_cores/guards/auth.guard';
 
-@Controller('message')
+@Controller('messages')
+@UseGuards(AuthGuard)
 export class MessageController {
   constructor(private readonly messageService: MessageService) {}
 
-  @Post()
-  create(@Body() createMessageDto: CreateMessageDto) {
-    return this.messageService.create(createMessageDto);
+  @Post('/conversation/:conversationId')
+  create(
+    @Param('conversationId', ParseObjectIdPipe) conversationId: string,
+    @Body() sendMessageDto: SendMessageDto,
+    @CurrentUser() currentUser: IUserPayload,
+  ) {
+    return this.messageService.sendMessage(
+      conversationId,
+      sendMessageDto,
+      currentUser,
+    );
   }
 
   @Get()
