@@ -29,6 +29,9 @@ export class Message {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'User' })
   seenBy: UserDocument;
 
+  @Prop({ default: false })
+  isEdited: boolean;
+
   @Prop()
   createdAt: Date;
   @Prop()
