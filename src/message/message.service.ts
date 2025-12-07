@@ -10,6 +10,9 @@ import { Message } from './schemas/message.schema';
 import { Model } from 'mongoose';
 import { ConversationService } from 'src/conversation/conversation.service';
 import { UserService } from 'src/user/user.service';
+import { MessageGateway } from './message.gateway';
+import { plainToInstance } from 'class-transformer';
+import { ResponseMessageDto } from './dto/response-message.dto';
 
 @Injectable()
 export class MessageService {
@@ -18,6 +21,7 @@ export class MessageService {
     private messageModel: Model<Message>,
     private conversationService: ConversationService,
     private userService: UserService,
+    private messageGateway: MessageGateway,
   ) {}
 
   async sendMessage(
@@ -34,12 +38,27 @@ export class MessageService {
       mediaFiles,
     });
 
+    const savedMessage = await message.save();
+
     await this.conversationService.updateLastMessage(
       conversationId,
-      message._id.toString(),
+      savedMessage._id.toString(),
     );
 
-    return message.save();
+    // Here, for ws, we re-create the message like the one we get on response,
+    // the one that dto creates:
+
+    const newMessage = await this.messageModel
+      .findById(savedMessage._id)
+      .populate('sender', 'name avatar')
+      .populate('seenBy', 'name avatar');
+
+    // This is just the thing we used on transform dto:
+    const responseMessage = plainToInstance(ResponseMessageDto, newMessage, {
+      excludeExtraneousValues: true,
+    });
+
+    this.messageGateway.handleNewMessage(conversationId, responseMessage);
   }
 
   async getAllMessages(conversationId: string, limit: number, cursor: string) {
@@ -95,6 +114,20 @@ export class MessageService {
     message.text = text ?? message.text;
     message.mediaFiles = mediaFiles ?? message.mediaFiles;
     message.isEdited ||= true;
+
+    const newMessage = await this.messageModel
+      .findById(message._id)
+      .populate('sender', 'name avatar')
+      .populate('seenBy', 'name avatar');
+
+    const responseMessage = plainToInstance(ResponseMessageDto, newMessage, {
+      excludeExtraneousValues: true,
+    });
+
+    this.messageGateway.handleUpdateMessage(
+      message.conversation._id.toString(),
+      responseMessage,
+    );
 
     return await message.save();
   }
