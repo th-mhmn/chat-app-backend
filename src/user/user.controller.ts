@@ -30,7 +30,7 @@ export class UserController {
 
   @Get('/profile')
   getCurrentUser(@CurrentUser() currentUser: IUserPayload) {
-    return this.userService.getCurrentUser(currentUser);
+    return this.userService.getCurrentUser(currentUser._id);
   }
 
   @Post('/upload-avatar')

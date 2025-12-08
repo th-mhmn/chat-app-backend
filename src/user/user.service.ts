@@ -42,8 +42,13 @@ export class UserService {
     return user;
   }
 
-  getCurrentUser(currentUser: IUserPayload) {
-    return this.userModel.findById(currentUser._id);
+  async getCurrentUser(userId: string) {
+    const user = await this.userModel.findOne({
+      _id: userId,
+      isActive: true,
+    });
+    if (!user) throw new NotFoundException('User not found');
+    return user;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
