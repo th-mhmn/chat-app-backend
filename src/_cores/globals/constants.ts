@@ -7,3 +7,4 @@ export const REACTION_TYPES = [
   'thoughtful',
   'inspirational',
 ];
+export const NOTIFICATION_TYPE = ['message'];

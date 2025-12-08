@@ -11,6 +11,7 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { ReactionModule } from './reaction/reaction.module';
 import { ConversationModule } from './conversation/conversation.module';
 import { MessageModule } from './message/message.module';
+import { NotificationModule } from './notification/notification.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -31,6 +32,7 @@ import { MessageModule } from './message/message.module';
     ReactionModule,
     ConversationModule,
     MessageModule,
+    NotificationModule,
   ],
   controllers: [AppController],
   providers: [AppService],

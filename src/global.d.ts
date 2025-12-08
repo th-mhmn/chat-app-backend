@@ -16,6 +16,7 @@ type IReaction =
   | 'angry'
   | 'thoughtful'
   | 'inspirational';
+type INotification = 'message';
 
 declare namespace Express {
   export interface Request {
