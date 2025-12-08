@@ -13,6 +13,7 @@ import { UserService } from 'src/user/user.service';
 import { MessageGateway } from './message.gateway';
 import { plainToInstance } from 'class-transformer';
 import { ResponseMessageDto } from './dto/response-message.dto';
+import { ResponseUserDto } from 'src/user/dto/response-user.dto';
 
 @Injectable()
 export class MessageService {
@@ -152,11 +153,27 @@ export class MessageService {
     const alreadySeen = message.seenBy.some(
       (u) => u._id.toString() === currentUser._id,
     );
+
     if (alreadySeen) return;
     if (currentUser._id === message.sender._id.toString()) return;
+
     const userDocument = await this.userService.findOne(currentUser._id);
     message.seenBy.push(userDocument);
     message.isSeen ||= true;
     message.save();
+
+    const responseUserDto = plainToInstance(ResponseUserDto, userDocument, {
+      excludeExtraneousValues: true,
+    });
+
+    this.messageGateway.handleMarkMessageAsSeen(
+      message.conversation._id.toString(),
+      id,
+      {
+        seenById: responseUserDto._id,
+        seenByName: responseUserDto.name,
+        seenByAvatarUrl: responseUserDto.avatarUrl,
+      },
+    );
   }
 }

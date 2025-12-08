@@ -51,4 +51,12 @@ export class MessageGateway
   handleRemoveMessage(conversationId: string, messageId: string) {
     this.server.to(conversationId).emit('remove_message', messageId);
   }
+
+  handleMarkMessageAsSeen(
+    conversationId: string,
+    messageId: string,
+    seenBy: { seenById: string; seenByName: string; seenByAvatarUrl: string },
+  ) {
+    this.server.to(conversationId).emit('seen_message', { messageId, seenBy });
+  }
 }
