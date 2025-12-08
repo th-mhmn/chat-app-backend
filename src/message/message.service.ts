@@ -140,6 +140,11 @@ export class MessageService {
       );
     message.isDeleted = true;
     message.save();
+
+    this.messageGateway.handleRemoveMessage(
+      message.conversation._id.toString(),
+      id,
+    );
   }
 
   async markMessageAsSeen(id: string, currentUser: IUserPayload) {
