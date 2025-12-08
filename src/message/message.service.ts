@@ -46,6 +46,11 @@ export class MessageService {
       savedMessage._id.toString(),
     );
 
+    await this.conversationService.updateLastMessageAt(
+      conversationId,
+      savedMessage,
+    );
+
     // Here, for ws, we re-create the message like the one we get on response,
     // the one that dto creates:
 
@@ -72,7 +77,7 @@ export class MessageService {
 
     const messages = await this.messageModel
       .find(query)
-      .sort({ createdAt: 1 })
+      .sort({ createdAt: -1 })
       .limit(limit + 1)
       .populate('sender', 'name avatar')
       .populate('seenBy', 'name avatar');
@@ -149,18 +154,25 @@ export class MessageService {
   }
 
   async markMessageAsSeen(id: string, currentUser: IUserPayload) {
-    const message = await this.findOne(id);
-    const alreadySeen = message.seenBy.some(
-      (u) => u._id.toString() === currentUser._id,
+    const userId = currentUser._id;
+    const message = await this.messageModel
+      .findOneAndUpdate(
+        { _id: id },
+        { $addToSet: { seenBy: userId } },
+        { new: true },
+      )
+      .populate('seenBy')
+      .populate('conversation');
+
+    if (!message) throw new NotFoundException('Message not found');
+
+    const wasJustAdded = message.seenBy.some(
+      (user: any) => user._id.toString() === userId.toString(),
     );
 
-    if (alreadySeen) return;
-    if (currentUser._id === message.sender._id.toString()) return;
+    if (!wasJustAdded) return;
 
-    const userDocument = await this.userService.findOne(currentUser._id);
-    message.seenBy.push(userDocument);
-    message.isSeen ||= true;
-    message.save();
+    const userDocument = await this.userService.findOne(userId);
 
     const responseUserDto = plainToInstance(ResponseUserDto, userDocument, {
       excludeExtraneousValues: true,
