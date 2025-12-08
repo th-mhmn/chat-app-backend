@@ -47,6 +47,25 @@ export class ResponseConversationDto {
   groupAvatarUrl: string;
 
   @Expose()
+  @Transform(({ obj }) => obj?.lastMessage?.text)
+  lastMessage: string;
+
+  @Expose()
+  @ConvertObjectId()
+  @Transform(({ obj }) => obj?.lastMessage?.sender?._id)
+  lastMessageSenderId: string;
+
+  @Expose()
+  @Transform(({ obj }) => obj?.lastMessage?.sender?.name)
+  lastMessageSenderName: string;
+
+  @Expose()
+  lastMessageAt: string;
+
+  @Expose()
+  isLastMessageSeen: boolean;
+
+  @Expose()
   isActive: boolean;
 
   @Expose()
